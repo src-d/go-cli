@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/jessevdk/go-flags"
 )
@@ -38,14 +39,14 @@ func (a commandAdder) AddCommand(cmd interface{}, cfs ...func(*flags.Command)) C
 		panic(err)
 	}
 
-	under, ok := typ.FieldByName("_")
-	if !ok {
-		panic(fmt.Errorf("missing `_` field"))
+	pc, err := getPlainCommandField(typ)
+	if err != nil {
+		panic(err)
 	}
 
-	name := under.Tag.Get("name")
-	shortDescription := under.Tag.Get("short-description")
-	longDescription := under.Tag.Get("long-description")
+	name := pc.Tag.Get("name")
+	shortDescription := pc.Tag.Get("short-description")
+	longDescription := pc.Tag.Get("long-description")
 
 	if v, ok := cmd.(ContextCommander); ok {
 		cmd = &nopCommander{v}
@@ -62,4 +63,33 @@ func (a commandAdder) AddCommand(cmd interface{}, cfs ...func(*flags.Command)) C
 	}
 
 	return commandAdder{c}
+}
+
+func getPlainCommandField(typ reflect.Type) (reflect.StructField, error) {
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		if isPlainCommandField(field) {
+			return field, nil
+		}
+	}
+
+	return reflect.StructField{}, fmt.Errorf("PlainCommand not found")
+}
+
+func isPlainCommandField(field reflect.StructField) bool {
+	if !field.Anonymous {
+		return false
+	}
+
+	if field.Type == reflect.TypeOf(PlainCommand{}) {
+		return true
+	}
+
+	for i := 0; i < field.Type.NumField(); i++ {
+		if isPlainCommandField(field.Type.Field(i)) {
+			return true
+		}
+	}
+
+	return false
 }

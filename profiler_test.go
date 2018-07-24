@@ -7,8 +7,7 @@ import (
 )
 
 type NopCommand struct {
-	_ string `name:"nop" short-description:"nop" long-description:"nop"`
-	Command
+	Command `name:"nop" short-description:"nop" long-description:"nop"`
 }
 
 func (c *NopCommand) Execute(args []string) error {

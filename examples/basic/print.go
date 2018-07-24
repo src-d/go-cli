@@ -11,8 +11,7 @@ func init() {
 }
 
 type printCommand struct {
-	cli.Command
-	_ string `name:"print" short-description:"prints a message" long-description:"prints a very nice message"`
+	cli.Command `name:"print" short-description:"prints a message" long-description:"prints a very nice message"`
 
 	Message string `long:"message" env:"BASIC_MY_OPTION" default:"my-message" description:"my option does something"`
 }

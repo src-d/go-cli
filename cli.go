@@ -101,10 +101,15 @@ type initializer interface {
 	init(*App) error
 }
 
+// PlainCommand should be embedded in a struct to indicate that it implements a
+// command. See package documentation for its usage.
+type PlainCommand struct{}
+
 // Command implements the default group flags. It is meant to be embedded into
 // other application commands to provide default behavior for logging,
 // profiling, etc.
 type Command struct {
+	PlainCommand
 	LogOptions      `group:"Log Options"`
 	ProfilerOptions `group:"Profiler Options"`
 }

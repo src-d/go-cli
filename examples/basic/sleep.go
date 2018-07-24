@@ -13,8 +13,7 @@ func init() {
 }
 
 type sleepCommand struct {
-	cli.Command
-	_ string `name:"sleep" short-description:"sleeps forever" long-description:"sleeps indefinitely until it receives SIGTERM or SIGINT"`
+	cli.Command `name:"sleep" short-description:"sleeps forever" long-description:"sleeps indefinitely until it receives SIGTERM or SIGINT"`
 
 	Positional struct {
 		Sleep time.Duration `positional-arg-name:"sleep" default:"1s" description:"sleep intervals"`

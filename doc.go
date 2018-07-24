@@ -17,11 +17,24 @@ Commands
 Commands are defined with structs. For the general available struct tags, refer
 to jessevdk/go-flags documentation at https://github.com/jessevdk/go-flags.
 
-Additionally, a special field must be defined with the struct tags
-name, short-description and long-description. For example:
+Additionally, every command struct must embed PlainCommand directly, or
+indirectly through other struct (e.g. Command). The embedded field must be
+defined with the struct tags name, short-description and long-description.
+For example:
 
   type helloCommand struct {
-	  _ string `name:"hello" short-description:"prints Hello World" long-description:"prints Hello World to standard output"`
+    Command `name:"hello" short-description:"prints Hello World" long-description:"prints Hello World to standard output"`
+  }
+
+This will also work if nested:
+
+  type myBaseCommand struct {
+    Command
+    Somethig string
+  }
+
+  type helloCommand struct {
+    myBaseCommand `name:"hello" short-description:"prints Hello World" long-description:"prints Hello World to standard output"`
   }
 
 Each defined command must be added to the application with the AddCommand
