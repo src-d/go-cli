@@ -1,14 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"syscall"
 	"testing"
 	"time"
 
-	"github.com/kami-zh/go-capturer"
 	"github.com/stretchr/testify/require"
 )
 
@@ -27,34 +28,32 @@ func TestSleep(t *testing.T) {
 	for _, fixture := range fixtures {
 		t.Run(fixture.signalName, func(t *testing.T) {
 			require := require.New(t)
-			var (
-				stdout, stderr string
-				err            error
-			)
+
+			cmd := exec.Command("./test", "sleep")
+
+			stdout := bytes.NewBuffer(nil)
+			stderr := bytes.NewBuffer(nil)
+			cmd.Stdout = stdout
+			cmd.Stderr = stderr
+
+			ready := make(chan struct{})
+			go func() {
+				err := cmd.Run()
+				require.NoError(err)
+				ready <- struct{}{}
+			}()
 
 			if fixture.signal != nil {
-				go func() {
-					time.Sleep(1 * time.Second)
-					pid := os.Getpid()
-					p, err := os.FindProcess(pid)
-					if err != nil {
-						panic(err)
-					}
-
-					p.Signal(fixture.signal)
-				}()
+				time.Sleep(1 * time.Second)
+				p, oerr := os.FindProcess(cmd.Process.Pid)
+				require.NoError(oerr)
+				require.NoError(p.Signal(fixture.signal))
 			}
+			<-ready
 
-			stdout = capturer.CaptureStdout(func() {
-				stderr = capturer.CaptureStderr(func() {
-					err = app.Run([]string{"test", "sleep"})
-				})
-			})
-
-			require.NoError(err)
-			require.True(strings.Contains(stdout, "Sleeping...\n"))
+			require.True(strings.Contains(stdout.String(), "Sleeping...\n"))
 			if fixture.signal != nil {
-				require.True(strings.Contains(stderr,
+				require.True(strings.Contains(stderr.String(),
 					fmt.Sprintf("signal %s received", fixture.signalName)))
 			}
 		})

@@ -1,9 +1,10 @@
 package main
 
 import (
+	"bytes"
+	"os/exec"
 	"testing"
 
-	"github.com/kami-zh/go-capturer"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,30 +16,31 @@ func TestPrint(t *testing.T) {
 		stderr string
 	}{{
 		name:   "default",
-		args:   []string{"test", "print"},
+		args:   []string{"print"},
 		stdout: "Message: my-message\n",
 	}, {
 		name:   "one_message",
-		args:   []string{"test", "print", "--message", "hello"},
+		args:   []string{"print", "--message", "hello"},
 		stdout: "Message: hello\n",
 	}}
 
 	for _, fixture := range fixtures {
 		t.Run(fixture.name, func(t *testing.T) {
 			require := require.New(t)
-			var (
-				stdout, stderr string
-				err            error
-			)
-			stdout = capturer.CaptureStdout(func() {
-				stderr = capturer.CaptureStderr(func() {
-					err = app.Run(fixture.args)
-				})
-			})
+
+			cmd := exec.Command("./test", fixture.args...)
+
+			stdout := bytes.NewBuffer(nil)
+			stderr := bytes.NewBuffer(nil)
+			cmd.Stdout = stdout
+			cmd.Stderr = stderr
+
+			err := cmd.Run()
+			require.NoError(err)
 
 			require.NoError(err)
-			require.Equal(fixture.stderr, stderr)
-			require.Equal(fixture.stdout, stdout)
+			require.Equal(fixture.stderr, stderr.String())
+			require.Equal(fixture.stdout, stdout.String())
 		})
 	}
 }
