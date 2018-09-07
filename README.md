@@ -1,7 +1,5 @@
 # go-cli
 
-**This is currently experimental. API, package name and import path might change any time.**
-
 A thin wrapper around common libraries used in our CLI apps (`jessevdk/go-flags`, `src-d/go-log`, `pprof`) to reduce boilerplate code and help in being more homogeneous with respect how our CLI work and look like.
 
 It provides:
@@ -15,4 +13,4 @@ For further details, look at `doc.go`.
 
 ## License
 
-Apache License Version 2.0, see LICENSE(LICENSE).
+Apache License Version 2.0, see [LICENSE](LICENSE).
