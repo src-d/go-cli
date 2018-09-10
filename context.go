@@ -15,22 +15,6 @@ type ContextCommander interface {
 	ExecuteContext(context.Context, []string) error
 }
 
-type nopCommander struct {
-	ContextCommander
-}
-
-func (c nopCommander) Execute(args []string) error {
-	return nil
-}
-
-func (c nopCommander) init(a *App) error {
-	if v, ok := c.ContextCommander.(initializer); ok {
-		return v.init(a)
-	}
-
-	return nil
-}
-
 func setupContext() (context.Context, context.CancelFunc) {
 	var (
 		sigterm = make(chan os.Signal)

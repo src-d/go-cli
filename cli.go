@@ -105,6 +105,10 @@ type initializer interface {
 // command. See package documentation for its usage.
 type PlainCommand struct{}
 
+func (c PlainCommand) Execute(args []string) error {
+	return nil
+}
+
 // Command implements the default group flags. It is meant to be embedded into
 // other application commands to provide default behavior for logging,
 // profiling, etc.
