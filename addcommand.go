@@ -48,10 +48,6 @@ func (a commandAdder) AddCommand(cmd interface{}, cfs ...func(*flags.Command)) C
 	shortDescription := pc.Tag.Get("short-description")
 	longDescription := pc.Tag.Get("long-description")
 
-	if v, ok := cmd.(ContextCommander); ok {
-		cmd = &nopCommander{v}
-	}
-
 	c, err := a.internalCommandAdder.AddCommand(
 		name, shortDescription, longDescription, cmd)
 	if err != nil {

@@ -15,9 +15,7 @@ func init() {
 type sleepCommand struct {
 	cli.Command `name:"sleep" short-description:"sleeps forever" long-description:"sleeps indefinitely until it receives SIGTERM or SIGINT"`
 
-	Positional struct {
-		Sleep time.Duration `positional-arg-name:"sleep" default:"1s" description:"sleep intervals"`
-	} `positional-args:"yes"`
+	Sleep time.Duration `name:"duration" default:"1s" description:"sleep intervals"`
 }
 
 func (c *sleepCommand) ExecuteContext(ctx context.Context, args []string) error {
@@ -29,6 +27,6 @@ func (c *sleepCommand) ExecuteContext(ctx context.Context, args []string) error 
 		}
 
 		fmt.Println("Sleeping...")
-		time.Sleep(c.Positional.Sleep)
+		time.Sleep(c.Sleep)
 	}
 }

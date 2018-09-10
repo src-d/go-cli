@@ -1,26 +1,34 @@
 package main
 
 import (
-	"os"
+	"bytes"
+	"os/exec"
 	"strings"
 	"testing"
 
-	"github.com/kami-zh/go-capturer"
 	"github.com/stretchr/testify/require"
 )
 
+func init() {
+	cmd := exec.Command("go", "build", "-o", "test", ".")
+	if err := cmd.Run(); err != nil {
+		panic(err)
+	}
+}
+
 func TestMain(t *testing.T) {
 	require := require.New(t)
-	os.Args = []string{"test", "--help"}
-	var (
-		stdout, stderr string
-	)
-	stdout = capturer.CaptureStdout(func() {
-		stderr = capturer.CaptureStderr(func() {
-			main()
-		})
-	})
 
-	require.Empty(stderr)
-	require.True(strings.HasPrefix(stdout, "Usage:\n  basic"))
+	cmd := exec.Command("./test", "--help")
+
+	stdout := bytes.NewBuffer(nil)
+	stderr := bytes.NewBuffer(nil)
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+
+	err := cmd.Run()
+	require.NoError(err)
+
+	require.Empty(stderr.String())
+	require.True(strings.HasPrefix(stdout.String(), "Usage:\n  basic"))
 }
