@@ -28,7 +28,7 @@ func TestPrint(t *testing.T) {
 		t.Run(fixture.name, func(t *testing.T) {
 			require := require.New(t)
 
-			cmd := exec.Command("./test", fixture.args...)
+			cmd := exec.Command(testBin, fixture.args...)
 
 			stdout := bytes.NewBuffer(nil)
 			stderr := bytes.NewBuffer(nil)

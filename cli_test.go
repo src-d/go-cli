@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/kami-zh/go-capturer"
@@ -25,7 +26,22 @@ func TestHelp(t *testing.T) {
 
 	require.NoError(err)
 	require.Empty(stderr)
-	require.Equal(`Usage:
+	if runtime.GOOS == "windows" {
+		require.Equal(`Usage:
+  test [OPTIONS] <version>
+
+my test bin
+
+Help Options:
+  /?          Show this help message
+  /h, /help   Show this help message
+
+Available commands:
+  version  print version
+
+`, stdout)
+	} else {
+		require.Equal(`Usage:
   test [OPTIONS] <version>
 
 my test bin
@@ -37,6 +53,7 @@ Available commands:
   version  print version
 
 `, stdout)
+	}
 }
 
 func TestHelpError(t *testing.T) {
@@ -57,7 +74,22 @@ func TestHelpError(t *testing.T) {
 
 	require.Error(err)
 	require.Empty(stdout)
-	require.Equal(`unknown flag `+"`"+`bad-option'
+	if runtime.GOOS == "windows" {
+		require.Equal(`unknown flag `+"`"+`bad-option'
+Usage:
+  test [OPTIONS] <version>
+
+my test bin
+
+Help Options:
+  /?          Show this help message
+  /h, /help   Show this help message
+
+Available commands:
+  version  print version
+`, stderr)
+	} else {
+		require.Equal(`unknown flag `+"`"+`bad-option'
 Usage:
   test [OPTIONS] <version>
 
@@ -69,6 +101,7 @@ Help Options:
 Available commands:
   version  print version
 `, stderr)
+	}
 }
 
 func TestAddCommandError(t *testing.T) {

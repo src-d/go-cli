@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"syscall"
 	"testing"
@@ -14,6 +15,10 @@ import (
 )
 
 func TestSleep(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("not supported on Windows")
+	}
+
 	fixtures := []struct {
 		signal     os.Signal
 		signalName string
@@ -29,7 +34,7 @@ func TestSleep(t *testing.T) {
 		t.Run(fixture.signalName, func(t *testing.T) {
 			require := require.New(t)
 
-			cmd := exec.Command("./test", "sleep")
+			cmd := exec.Command(testBin, "sleep")
 
 			stdout := bytes.NewBuffer(nil)
 			stderr := bytes.NewBuffer(nil)
