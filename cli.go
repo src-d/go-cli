@@ -9,6 +9,8 @@ import (
 	"github.com/jessevdk/go-flags"
 )
 
+type DeferFunc func()
+
 // App defines the CLI application that will be run.
 type App struct {
 	Parser *flags.Parser
@@ -16,6 +18,9 @@ type App struct {
 	// DebugServeMux is serves debug endpoints. It used to attach the http/pprof
 	// endpoint if enabled, and can be used to handle other debug endpoints.
 	DebugServeMux *http.ServeMux
+
+	// deferFuncs holds the functions to be called when the command finishes.
+	deferFuncs []DeferFunc
 }
 
 // New creates a new App, including default values.
@@ -41,6 +46,8 @@ func New(name, version, build, description string) *App {
 // Run runs the app with the given command line arguments. In order to reduce
 // boilerplate, RunMain should be used instead.
 func (a *App) Run(args []string) error {
+	defer a.callDefer()
+
 	if _, err := a.Parser.ParseArgs(args[1:]); err != nil {
 		if err, ok := err.(*flags.Error); ok {
 			if err.Type == flags.ErrHelp {
@@ -61,6 +68,21 @@ func (a *App) Run(args []string) error {
 func (a *App) RunMain() {
 	if err := a.Run(os.Args); err != nil {
 		os.Exit(1)
+	}
+}
+
+// Defer adds a function to be called after the command is executed. The
+// functions added are called in reverse order.
+func (a *App) Defer(d DeferFunc) {
+	a.deferFuncs = append(a.deferFuncs, d)
+}
+
+func (a *App) callDefer() {
+	for i := len(a.deferFuncs) - 1; i >= 0; i-- {
+		f := a.deferFuncs[i]
+		if f != nil {
+			f()
+		}
 	}
 }
 
