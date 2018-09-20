@@ -21,7 +21,7 @@ type ProfilerOptions struct {
 }
 
 // Init initializes the profiler.
-func (c ProfilerOptions) init(a *App) error {
+func (c ProfilerOptions) Init(a *App) error {
 	runtime.SetBlockProfileRate(c.ProfilerBlockRate)
 	runtime.SetMutexProfileFraction(c.ProfilerMutexFraction)
 
