@@ -131,3 +131,26 @@ type badCommander int
 func (badCommander) Execute(args []string) error {
 	return nil
 }
+
+func TestDefer(t *testing.T) {
+	require := require.New(t)
+
+	app := New("test", "0.1.0", "abc", "my test bin")
+	require.NotNil(app)
+
+	expected := []int{7, 6, 5, 4, 3, 2, 1, 0}
+	var result []int
+
+	for i := range expected {
+		num := i
+		app.Defer(func() {
+			result = append(result, num)
+		})
+	}
+
+	require.Nil(result)
+
+	err := app.Run([]string{"test", "version"})
+	require.NoError(err)
+	require.Equal(expected, result)
+}
