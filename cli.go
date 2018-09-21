@@ -87,8 +87,8 @@ func (a *App) callDefer() {
 }
 
 func (a *App) commandHandler(cmd flags.Commander, args []string) error {
-	if v, ok := cmd.(initializer); ok {
-		if err := v.init(a); err != nil {
+	if v, ok := cmd.(Initializer); ok {
+		if err := v.Init(a); err != nil {
 			return err
 		}
 	}
@@ -119,14 +119,17 @@ func getStructType(data interface{}) (reflect.Type, error) {
 	return typ, nil
 }
 
-type initializer interface {
-	init(*App) error
+// Initializer interface provides an Init function.
+type Initializer interface {
+	// Init initializes the command.
+	Init(*App) error
 }
 
 // PlainCommand should be embedded in a struct to indicate that it implements a
 // command. See package documentation for its usage.
 type PlainCommand struct{}
 
+// Execute is a placeholder for the function that runs the command.
 func (c PlainCommand) Execute(args []string) error {
 	return nil
 }
@@ -140,13 +143,13 @@ type Command struct {
 	ProfilerOptions `group:"Profiler Options"`
 }
 
-// Init initializes the command.
-func (c Command) init(a *App) error {
-	if err := c.LogOptions.init(a); err != nil {
+// Init implements initializer interface.
+func (c Command) Init(a *App) error {
+	if err := c.LogOptions.Init(a); err != nil {
 		return err
 	}
 
-	if err := c.ProfilerOptions.init(a); err != nil {
+	if err := c.ProfilerOptions.Init(a); err != nil {
 		return err
 	}
 
