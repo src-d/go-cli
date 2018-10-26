@@ -15,7 +15,7 @@ func init() {
 type sleepCommand struct {
 	cli.Command `name:"sleep" short-description:"sleeps forever" long-description:"sleeps indefinitely until it receives SIGTERM or SIGINT"`
 
-	Sleep time.Duration `name:"duration" default:"1s" description:"sleep intervals"`
+	Sleep time.Duration `long:"duration" default:"1s" description:"sleep intervals"`
 }
 
 func (c *sleepCommand) ExecuteContext(ctx context.Context, args []string) error {
