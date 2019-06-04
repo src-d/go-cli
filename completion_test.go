@@ -31,7 +31,9 @@ func TestCompletionCommand(t *testing.T) {
 	require.Equal(
 		`# Save this file to /etc/bash_completion.d/test
 #
-# or add the following line to your .bashrc file: 
+# or add the following line to your .bashrc file:
+#   source <(test completion)
+# running:
 #   echo "source <(test completion)" >> ~/.bashrc
 
 _completion-test() {
@@ -77,7 +79,8 @@ func TestCompletionHelpCommand(t *testing.T) {
 
 Print a bash completion script for test.
 
-You can place it on /etc/bash_completion.d/test, or add it to your .bashrc:
+You can place it on /etc/bash_completion.d/test, or add it to your .bashrc
+running:
 echo "source <(test completion)" >> ~/.bashrc
 
 
