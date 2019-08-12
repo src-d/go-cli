@@ -9,6 +9,10 @@ import (
 )
 
 func TestCompletionCommand(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("no completion command on windows")
+	}
+
 	require := require.New(t)
 	app := New("test", "0.1.0", "abcde", "test app")
 	var (
@@ -48,6 +52,10 @@ complete -F _completion-test test
 }
 
 func TestCompletionHelpCommand(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("no completion command on windows")
+	}
+
 	require := require.New(t)
 	app := New("test", "0.1.0", "abcde", "test app")
 	var (
@@ -63,25 +71,7 @@ func TestCompletionHelpCommand(t *testing.T) {
 
 	require.NoError(err)
 	require.Empty(stderr)
-	if runtime.GOOS == "windows" {
-		require.Equal(
-			`Usage:
-  test [OPTIONS] completion
-
-Print a bash completion script for test.
-
-You can place it on /etc/bash_completion.d/test, or add it to your .bashrc:
-echo "source <(test completion)" >> ~/.bashrc
-
-
-Help Options:
-  /?              Show this help message
-  /h, /help       Show this help message
-
-`, stdout)
-
-	} else {
-		require.Equal(
+	require.Equal(
 			`Usage:
   test [OPTIONS] completion
 
@@ -95,5 +85,4 @@ Help Options:
   -h, --help      Show this help message
 
 `, stdout)
-	}
 }

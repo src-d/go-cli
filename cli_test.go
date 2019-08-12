@@ -28,7 +28,7 @@ func TestHelp(t *testing.T) {
 	require.Empty(stderr)
 	if runtime.GOOS == "windows" {
 		require.Equal(`Usage:
-  test [OPTIONS] <completion | version>
+  test [OPTIONS] <version>
 
 my test bin
 
@@ -37,8 +37,7 @@ Help Options:
   /h, /help   Show this help message
 
 Available commands:
-  completion  print bash completion script
-  version     print version
+  version  print version
 
 `, stdout)
 	} else {
@@ -79,7 +78,7 @@ func TestHelpError(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		require.Equal(`unknown flag `+"`"+`bad-option'
 Usage:
-  test [OPTIONS] <completion | version>
+  test [OPTIONS] <version>
 
 my test bin
 
@@ -88,8 +87,7 @@ Help Options:
   /h, /help   Show this help message
 
 Available commands:
-  completion  print bash completion script
-  version     print version
+  version  print version
 `, stderr)
 	} else {
 		require.Equal(`unknown flag `+"`"+`bad-option'
