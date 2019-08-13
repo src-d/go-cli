@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"reflect"
-	"runtime"
 
 	"github.com/jessevdk/go-flags"
 )
@@ -34,11 +33,9 @@ func New(name, version, build, description string) *App {
 		Build:   build,
 	})
 
-	if runtime.GOOS != "windows" {
-		app.AddCommand(&CompletionCommand{
-			Name: name,
-		}, InitCompletionCommand(name))
-	}
+	app.AddCommand(&CompletionCommand{
+		Name: name,
+	}, InitCompletionCommand(name))
 
 	return app
 }

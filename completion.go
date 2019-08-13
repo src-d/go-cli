@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"os"
+	"runtime"
 	"text/template"
 
 	"github.com/jessevdk/go-flags"
@@ -13,6 +14,12 @@ import (
 type CompletionCommand struct {
 	PlainCommand `name:"completion" short-description:"print bash completion script"`
 	Name         string
+}
+
+// IsValid CompletionCommand is specific to bash, so not available in windows (using powershell)
+// see https://github.com/src-d/go-cli/pull/20#pullrequestreview-273691437
+func (c *CompletionCommand) IsValid() bool {
+	return runtime.GOOS != "windows"
 }
 
 // InitCompletionCommand returns an additional AddCommand function that fills
