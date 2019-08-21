@@ -22,7 +22,7 @@ func InitCompletionCommand(appname string) func(*flags.Command) {
 		t := template.Must(template.New("desc").Parse(
 			`Print a bash completion script for {{.Name}}.
 
-You can place it on /etc/bash_completion.d/{{.Name}}, or add it to your .bashrc:
+You can place it on /etc/bash_completion.d/{{.Name}}, or add it to your .bashrc running:
     echo "source <({{.Name}} completion)" >> ~/.bashrc
 `))
 
@@ -37,7 +37,9 @@ func (c CompletionCommand) Execute(args []string) error {
 	t := template.Must(template.New("completion").Parse(
 		`# Save this file to /etc/bash_completion.d/{{.Name}}
 #
-# or add the following line to your .bashrc file: 
+# or add the following line to your .bashrc file:
+#   source <({{.Name}} completion)
+# running:
 #   echo "source <({{.Name}} completion)" >> ~/.bashrc
 
 _completion-{{.Name}}() {
