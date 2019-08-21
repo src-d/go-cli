@@ -7,6 +7,12 @@ import (
 	"github.com/jessevdk/go-flags"
 )
 
+// Validable can be used to confirm if a subcommand can be added
+type Validable interface {
+	// IsValid returns true if the subcommand can be added
+	IsValid() bool
+}
+
 // AddCommand adds a new command to the application. The command must have a
 // special field defining name, short-description and long-description (see
 // package documentation). It panics if the command is not valid.
@@ -15,13 +21,17 @@ import (
 // Additional functions can be passed to manipulate the resulting *flags.Command
 // after its initialization.
 func (a *App) AddCommand(cmd interface{}, cfs ...func(*flags.Command)) CommandAdder {
+	if v, ok := cmd.(Validable); ok && !v.IsValid() {
+		return a
+	}
+
 	return commandAdder{a.Parser}.AddCommand(cmd, cfs...)
 }
 
 // CommandAdder can be used to add subcommands.
 type CommandAdder interface {
 	// AddCommand adds the given commands as subcommands of the
-	// cuurent one.
+	// curent one.
 	AddCommand(interface{}, ...func(*flags.Command)) CommandAdder
 }
 
